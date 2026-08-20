@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS audit_logs;
+DROP TABLE IF EXISTS incidents;
+DROP SEQUENCE IF EXISTS incident_number_seq;
+DROP TABLE IF EXISTS teams;
+DROP TABLE IF EXISTS users;
