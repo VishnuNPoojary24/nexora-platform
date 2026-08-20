@@ -8,11 +8,14 @@ declare global {
     interface Request {
       requestId: string;
       user?: {
-      id?: string;
-      externalId: string;
-      email?: string;
-      roles: string[];
-    };
+        id?: string;
+        externalId: string;
+        email?: string;
+        companyId?: string;
+        workspaceId?: string;
+        displayName?: string;
+        roles: string[];
+      };
     }
   }
 }

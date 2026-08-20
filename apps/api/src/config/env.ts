@@ -15,6 +15,8 @@ const envSchema = z.object({
   DATABASE_POOL_MAX: z.coerce.number().int().positive().default(10),
   DATABASE_IDLE_TIMEOUT_MS: z.coerce.number().int().positive().default(30000),
   DATABASE_CONNECTION_TIMEOUT_MS: z.coerce.number().int().positive().default(5000),
+  AUTH_JWT_SECRET: z.string().min(32).default("nexora_dev_auth_secret_nexora_dev_auth_secret"),
+  AUTH_JWT_TTL_SECONDS: z.coerce.number().int().positive().default(86400),
   REDIS_HOST: z.string().default("localhost"),
   REDIS_PORT: z.coerce.number().int().positive().default(6379),
   RABBITMQ_HOST: z.string().default("localhost"),

@@ -87,10 +87,25 @@ services:
       timeout: 5s
       retries: 20
 
-  api:
+  ai:
     build:
       context: .
-      dockerfile: apps/api/Dockerfile
+      dockerfile: apps/ai/Dockerfile
+    environment:
+      AI_SERVICE_NAME: nexora-ai
+      AI_PROVIDER: placeholder
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    image: node:24-alpine
+    working_dir: /workspace
+    command: sh -c "npm ci --include=optional && npm run dev --workspace=apps/api"
     environment:
       AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:-nexora_dev_auth_secret_nexora_dev_auth_secret}
       NODE_ENV: development
@@ -115,6 +130,9 @@ services:
       AI_SERVICE_URL: http://ai:8000
     ports:
       - "3000:3000"
+    volumes:
+      - .:/workspace
+      - npm_cache:/root/.npm
     depends_on:
       postgres:
         condition: service_healthy
@@ -122,36 +140,25 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  ai:
-    build:
-      context: .
-      dockerfile: apps/ai/Dockerfile
-    environment:
-      AI_SERVICE_NAME: nexora-ai
-      AI_PROVIDER: placeholder
-    ports:
-      - "8000:8000"
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      minio:
+        condition: service_healthy
+      ai:
+        condition: service_healthy
 
   web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
+    image: node:24-alpine
+    working_dir: /workspace
+    command: sh -c "npm ci --include=optional && npm run dev --workspace=apps/web -- --host 0.0.0.0 --port 5173"
+    environment:
+      VITE_API_URL: http://localhost:3000
     ports:
-      - "5173:80"
+      - "5173:5173"
+    volumes:
+      - .:/workspace
+      - npm_cache:/root/.npm
     depends_on:
       api:
-        condition: service_healthy
+        condition: service_started
 
 volumes:
   postgres_data:
@@ -159,3 +166,4 @@ volumes:
   rabbitmq_data:
   minio_data:
   keycloak_data:
+  npm_cache:

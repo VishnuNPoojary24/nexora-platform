@@ -14,6 +14,8 @@
     "lint": "npm run lint --workspace=apps/api && npm run lint --workspace=apps/web",
     "db:migrate": "npm run db:migrate --workspace=apps/api",
     "db:rollback": "npm run db:rollback --workspace=apps/api",
+    "dev:compose": "docker compose -f docker-compose.dev.yml up --build",
+    "dev:compose:down": "docker compose -f docker-compose.dev.yml down -v",
     "infra:up": "docker compose up -d",
     "infra:down": "docker compose down",
     "infra:logs": "docker compose logs -f"

@@ -4,6 +4,12 @@
     "target": "es2023",
     "lib": ["ES2023", "DOM"],
     "module": "esnext",
+    "baseUrl": ".",
+    "paths": {
+      "@nexora/api-client": ["../../packages/api-client/src/index.ts"],
+      "@nexora/types": ["../../packages/types/src/index.ts"]
+    },
+    "ignoreDeprecations": "6.0",
     "types": ["vite/client"],
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,

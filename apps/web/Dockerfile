@@ -1,11 +1,11 @@
 FROM node:24-alpine AS build
 WORKDIR /app
-COPY package*.json ./
-COPY apps/web/package*.json apps/web/
 COPY packages packages
-RUN npm ci
-COPY apps/web apps/web
-RUN npm run build --workspace=apps/web
+COPY apps/web/package*.json apps/web/
+WORKDIR /app/apps/web
+RUN npm ci --include=optional
+COPY apps/web .
+RUN npm run build
 
 FROM nginx:1.29-alpine
 COPY --from=build /app/apps/web/dist /usr/share/nginx/html

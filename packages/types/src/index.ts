@@ -3,14 +3,93 @@ export type IncidentPriority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
 export interface User {
   id: string;
+  company_id: string | null;
+  workspace_id: string | null;
   external_id: string | null;
   email: string;
   display_name: string;
   first_name: string | null;
   last_name: string | null;
   is_active: boolean;
+  password_changed_at?: string | null;
+  last_login_at?: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface Company {
+  id: string;
+  functional_id: string;
+  legal_name: string;
+  display_name: string;
+  status: "ACTIVE" | "SUSPENDED" | "ARCHIVED";
+  primary_domain: string | null;
+  created_by_user_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Workspace {
+  id: string;
+  company_id: string;
+  functional_id: string;
+  slug: string;
+  name: string;
+  status: "ACTIVE" | "SUSPENDED" | "ARCHIVED";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WorkspaceMembership {
+  workspace_id: string;
+  role_code: string;
+  role_name: string;
+  is_primary: boolean;
+}
+
+export interface AuthSession {
+  accessToken: string;
+  tokenType: "Bearer";
+  expiresIn: number;
+  user: User;
+  company: Company | null;
+  workspace: Workspace | null;
+  memberships: WorkspaceMembership[];
+}
+
+export interface BootstrapCompanyInput {
+  companyFunctionalId: string;
+  companyLegalName: string;
+  companyDisplayName: string;
+  primaryDomain?: string;
+  workspaceFunctionalId: string;
+  workspaceSlug: string;
+  workspaceName: string;
+  admin: {
+    email: string;
+    password: string;
+    display_name: string;
+    first_name?: string;
+    last_name?: string;
+  };
+}
+
+export interface RegisterUserInput {
+  companyFunctionalId: string;
+  workspaceFunctionalId?: string;
+  roleCode: string;
+  email: string;
+  password: string;
+  display_name: string;
+  first_name?: string;
+  last_name?: string;
+}
+
+export interface LoginInput {
+  companyFunctionalId: string;
+  workspaceFunctionalId?: string;
+  email: string;
+  password: string;
 }
 
 export interface Team {

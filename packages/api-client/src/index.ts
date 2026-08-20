@@ -1,12 +1,16 @@
 import type {
   ApiErrorResponse,
+  AuthSession,
+  BootstrapCompanyInput,
   ApiResponse,
   CreateIncidentInput,
   CreateTeamInput,
   CreateUserInput,
   Incident,
   IncidentListQuery,
+  LoginInput,
   PaginatedApiResponse,
+  RegisterUserInput,
   Team,
   UpdateIncidentInput,
   UpdateTeamInput,
@@ -90,6 +94,22 @@ export function createApiClient(options: ApiClientOptions = {}) {
   }
 
   return {
+    bootstrapCompany: (input: BootstrapCompanyInput) =>
+      request<AuthSession>("/api/v1/auth/bootstrap-company", {
+        method: "POST",
+        body: JSON.stringify(input),
+      }),
+    registerUser: (input: RegisterUserInput) =>
+      request<AuthSession>("/api/v1/auth/register", {
+        method: "POST",
+        body: JSON.stringify(input),
+      }),
+    login: (input: LoginInput) =>
+      request<AuthSession>("/api/v1/auth/login", {
+        method: "POST",
+        body: JSON.stringify(input),
+      }),
+    me: () => request<AuthSession>("/api/v1/auth/me"),
     getIncidents: (query: IncidentListQuery = {}) => paginated<Incident>(`/api/v1/incidents${toQuery({ ...query })}`),
     getIncident: (id: string) => request<Incident>(`/api/v1/incidents/${id}`),
     createIncident: (input: CreateIncidentInput) =>
@@ -131,4 +151,8 @@ export function createApiClient(options: ApiClientOptions = {}) {
 
 export const apiClient = createApiClient({
   baseUrl: typeof import.meta !== "undefined" ? import.meta.env.VITE_API_URL : defaultBaseUrl,
+  getAccessToken:
+    typeof window !== "undefined"
+      ? () => window.localStorage.getItem("nexora-auth-token") ?? undefined
+      : undefined,
 });
